@@ -135,7 +135,7 @@ namespace jxl_functions { //my own tomfoolery goes here
 			}
 		}
 	IMAGE_DECODE_COMPLETE:
-		//ok, by this point we have a fully decoded image in floFORMAT_RGBAFat format.
+		//ok, by this point we have a fully decoded image in float format.
 		const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, pixels.len(), pixels->data());
 	}
 }
@@ -179,27 +179,29 @@ Ref<Image> JXL::decode(const PackedByteArray &data) {
 }
 
 Error JXL::decode_to_image(const PackedByteArray &data, const Ref<Image> &out_image) {
-	jxl_desc desc;
-	void *out;
+	// jxl_desc desc;
+	// void *out;
 
-	out = jxl_functions::decode(data.ptr(), (int)data.size(), &desc, 0);
-	ERR_FAIL_COND_V_MSG(out == NULL, ERR_FILE_CORRUPT, "Unable to decode data");
+	// out = jxl_functions::decode(data.ptr(), (int)data.size(), &desc, 0);
+	Error result = jxl_functions::decode(data->data() , data->len() ,out_image);
+	return result;
+	// ERR_FAIL_COND_V_MSG(out == NULL, ERR_FILE_CORRUPT, "Unable to decode data");
 
-	PackedByteArray img_data;
+	// PackedByteArray img_data;
 
-	int64_t size = desc.channels * desc.width * desc.height;
-	img_data.resize(size);
+	// int64_t size = desc.channels * desc.width * desc.height;
+	// img_data.resize(size);
 
-	if (img_data.size() != size) {
-		::free(out);
-		ERR_FAIL_V_MSG(ERR_OUT_OF_MEMORY, "Unable to resize PackedByteArray");
-	}
+	// if (img_data.size() != size) {
+	// 	::free(out);
+	// 	ERR_FAIL_V_MSG(ERR_OUT_OF_MEMORY, "Unable to resize PackedByteArray");
+	// }
 
-	memcpy(img_data.ptrw(), out, size);
-	::free(out);
+	// memcpy(img_data.ptrw(), out, size);
+	// ::free(out);
 
-	const_cast<Image *>(out_image.ptr())->set_data(desc.width, desc.height, false, desc.channels == 3 ? Image::Format::FORMAT_RGB8 : Image::Format::FORMAT_RGBA8, img_data);
-	return Error::OK;
+	// const_cast<Image *>(out_image.ptr())->set_data(desc.width, desc.height, false, desc.channels == 3 ? Image::Format::FORMAT_RGB8 : Image::Format::FORMAT_RGBA8, img_data);
+	// return Error::OK;
 }
 
 Error JXL::write(String path, Ref<Image> img) {
