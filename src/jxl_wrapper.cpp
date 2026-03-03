@@ -149,7 +149,7 @@ namespace jxl_functions { //my own tomfoolery goes here
 		dat_out.reserve(sizeof(float) * pixels->size());
 		memcpy(dat_out.data(), pixels->data(),dat_out.size());
 		// const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, (pixels->size())*sizeof(float),(uint8_t*)pixels->data());
-		const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, dat_out.size(), reinterpret_cast<PackedByteArray>(dat_out));
+		const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, dat_out.size(), reinterpret_cast<PackedByteArray>(*dat_out));
 	}
 }
 

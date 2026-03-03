@@ -19,5 +19,8 @@ Tasks:
 
 Current state:
 ---
-It builds but godot wont load it for some reason. It's like it isnt even there!
-In theory it currently loads jxl images, but I cannot test it like this.
+~~It builds but godot wont load it for some reason. It's like it isnt even there!
+In theory it currently loads jxl images, but I cannot test it like this.~~
+
+not building at all actually, but at least it is trying to build
+the right files now.
