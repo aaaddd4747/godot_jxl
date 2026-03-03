@@ -41,3 +41,6 @@ testsuite/images/
 testproject/addons/
 testproject/testsuite/
 SUCCESS
+
+obj/*.cpp
+godot-cpp/obj/*.cpp
