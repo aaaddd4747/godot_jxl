@@ -6,17 +6,17 @@
 using namespace godot;
 
 class JXL : public RefCounted {
-	GDCLASS(JXL, RefCounted)
+	GDCLASS(JXL, RefCounted);
 
-	friend class QOIImport;
+	friend class JXLImport;
 
-private:
-	static Error decode_to_image(const PackedByteArray &data, const Ref<Image> &out_image);
+// private:
 
 protected:
-	static void _bind_methods();
+static void _bind_methods();
 
 public:
+	static Error decode_to_image(const PackedByteArray &data, const Ref<Image> &out_image);
 	static String _get_version();
 	static Ref<Image> read(String path);
 	static Ref<Image> decode(const PackedByteArray &data);

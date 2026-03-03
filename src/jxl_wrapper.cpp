@@ -1,6 +1,7 @@
 #include "jxl_wrapper.h"
 #include "version.h"
 #include <cstdint>
+#include <cstring>
 #include <vector>
 
 #define JXL_NO_STDIO
@@ -30,7 +31,7 @@ using namespace godot;
 
 
 namespace jxl_functions { //my own tomfoolery goes here
-
+	
 	Error decode(const uint8_t *data_in,size_t data_length,const Ref<Image> &out_image){
 		//much, but not all of this function is derived from: https://github.com/libjxl/libjxl/blob/main/examples/decode_oneshot.cc
 		//for now i am just doing this directly, the real fun begins later.
@@ -43,7 +44,7 @@ namespace jxl_functions { //my own tomfoolery goes here
 		xsize = &_xsize;
 		ysize = &_ysize;
 		std::vector<float> _pixels;//a third time for good luck! this is the output buffer.
-		std::vector<float> *pixels = _pixels;
+		std::vector<float> *pixels = &_pixels;
 		if (JXL_DEC_SUCCESS !=
 			JxlDecoderSubscribeEvents(decoder.get(), JXL_DEC_BASIC_INFO |
 													 JXL_DEC_COLOR_ENCODING |
@@ -62,15 +63,17 @@ namespace jxl_functions { //my own tomfoolery goes here
 		for(;;){
 			JxlDecoderStatus status = JxlDecoderProcessInput(decoder.get());
 			switch (status) { //my main notable decision is to convert the decoder from an if-else ladder to a switch to make it easier to reason about.
-				case JXL_DEC_ERROR:
+				case JXL_DEC_ERROR:{
 					fprintf(stderr, "JXL: Decoder error\n");
 					return Error::FAILED;
 					break;
-				case JXL_DEC_NEED_MORE_INPUT:
+				}
+				case JXL_DEC_NEED_MORE_INPUT:{
 					fprintf(stderr, "JXL: Error, already provided all input\n");
 					return Error::ERR_FILE_CORRUPT;
 					break;
-				case JXL_DEC_BASIC_INFO:
+				}
+				case JXL_DEC_BASIC_INFO:{
 					if (JXL_DEC_SUCCESS != JxlDecoderGetBasicInfo(decoder.get(), &info)) {
 						fprintf(stderr, "JxlDecoderGetBasicInfo failed\n");
 						return Error::ERR_FILE_CORRUPT;
@@ -82,7 +85,8 @@ namespace jxl_functions { //my own tomfoolery goes here
 						runner.get(),
 						JxlResizableParallelRunnerSuggestThreads(info.xsize, info.ysize));
 					break;
-				case JXL_DEC_COLOR_ENCODING:
+				}
+				case JXL_DEC_COLOR_ENCODING:{
 					// Get the ICC color profile of the pixel data
 					size_t icc_size;
 					if (JXL_DEC_SUCCESS !=
@@ -99,7 +103,8 @@ namespace jxl_functions { //my own tomfoolery goes here
 					return Error::ERR_FILE_CORRUPT;
 					}
 					break;
-				case JXL_DEC_NEED_IMAGE_OUT_BUFFER:
+				}
+				case JXL_DEC_NEED_IMAGE_OUT_BUFFER:{
 					size_t buffer_size;
 					if (JXL_DEC_SUCCESS !=
 						JxlDecoderImageOutBufferSize(decoder.get(), &format, &buffer_size)) {
@@ -115,28 +120,36 @@ namespace jxl_functions { //my own tomfoolery goes here
 					pixels->resize(*xsize * *ysize * 4);
 					void* pixels_buffer = static_cast<void*>(pixels->data());
 					size_t pixels_buffer_size = pixels->size() * sizeof(float);
-					if (JXL_DEC_SUCCESS != JxlDecoderSetImageOutBuffer(dec.get(), &format,
+					if (JXL_DEC_SUCCESS != JxlDecoderSetImageOutBuffer(decoder.get(), &format,
 																		pixels_buffer,
 																		pixels_buffer_size)) {
 						fprintf(stderr, "JxlDecoderSetImageOutBuffer failed\n");
 						return Error::ERR_CANT_CREATE;
 					}
 					break;
-				case JXL_DEC_FULL_IMAGE: //frame is complete
+				}
+				case JXL_DEC_FULL_IMAGE:{ //frame is complete
 					//i am not supporting animated images. that is a right and proper can of worms we are absolutely not ready for.
 					//instead, we will halt on the first completed frame.
-				case JXL_DEC_SUCCESS: //full image is complete
+				}
+				case JXL_DEC_SUCCESS:{ //full image is complete
 					goto IMAGE_DECODE_COMPLETE;
 					break;
-				default:
+				}
+				default:{
 					fprintf(stderr, "JXL: Unknown decoder status\n");
 					return Error::FAILED;
 					break;
+				}
 			}
 		}
 	IMAGE_DECODE_COMPLETE:
 		//ok, by this point we have a fully decoded image in float format.
-		const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, pixels.len(), pixels->data());
+		std::vector<uint8_t> dat_out;
+		dat_out.reserve(sizeof(float) * pixels->size());
+		memcpy(dat_out.data(), pixels->data(),dat_out.size());
+		// const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, (pixels->size())*sizeof(float),(uint8_t*)pixels->data());
+		const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, dat_out.size(), reinterpret_cast<PackedByteArray>(dat_out));
 	}
 }
 
@@ -183,7 +196,7 @@ Error JXL::decode_to_image(const PackedByteArray &data, const Ref<Image> &out_im
 	// void *out;
 
 	// out = jxl_functions::decode(data.ptr(), (int)data.size(), &desc, 0);
-	Error result = jxl_functions::decode(data->data() , data->len() ,out_image);
+	Error result = jxl_functions::decode(data->data() , data->size() ,out_image);
 	return result;
 	// ERR_FAIL_COND_V_MSG(out == NULL, ERR_FILE_CORRUPT, "Unable to decode data");
 

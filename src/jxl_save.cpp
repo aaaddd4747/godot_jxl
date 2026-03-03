@@ -5,7 +5,7 @@ GODOT_WARNING_DISABLE()
 #include <godot_cpp/classes/texture2d.hpp>
 GODOT_WARNING_RESTORE()
 
-Error QOIResourceSaver::_save(const Ref<Resource> &resource, const String &path, uint32_t flags) {
+Error JXLResourceSaver::_save(const Ref<Resource> &resource, const String &path, uint32_t flags) {
 	{
 		Ref<Image> img = resource;
 		if (img.is_valid())
@@ -22,7 +22,7 @@ Error QOIResourceSaver::_save(const Ref<Resource> &resource, const String &path,
 	ERR_FAIL_V_MSG(ERR_INVALID_DATA, "Image cannot be null");
 }
 
-bool QOIResourceSaver::_recognize(const Ref<Resource> &resource) const {
+bool JXLResourceSaver::_recognize(const Ref<Resource> &resource) const {
 	{
 		Ref<Image> img = resource;
 		if (img.is_valid())
@@ -40,9 +40,9 @@ bool QOIResourceSaver::_recognize(const Ref<Resource> &resource) const {
 }
 
 PackedStringArray JXLResourceSaver::_get_recognized_extensions(const Ref<Resource> &resource) const {
-	return PackedStringArray(TypedArray<String>::make("qoi"));
+	return PackedStringArray(TypedArray<String>::make("jxl"));
 }
 
 bool JXLResourceSaver::_recognize_path(const Ref<Resource> &resource, const String &path) const {
-	return path.get_extension().nocasecmp_to("qoi") == 0;
+	return path.get_extension().nocasecmp_to("jxl") == 0;
 }

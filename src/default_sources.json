@@ -1,7 +1,7 @@
 [
 	"asset_library_update_checker.cpp",
-	"qoi_import.cpp",
-	"qoi_save.cpp",
-	"qoi_wrapper.cpp",
+	"jxl_import.cpp",
+	"jxl_save.cpp",
+	"jxl_wrapper.cpp",
 	"register_types.cpp"
 ]
