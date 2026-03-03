@@ -44,3 +44,4 @@ SUCCESS
 
 obj/*.cpp
 godot-cpp/obj/*.cpp
+.build_cache

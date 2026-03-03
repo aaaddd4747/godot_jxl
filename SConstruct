@@ -21,6 +21,10 @@ lib_name = "godot_jxl"
 default_output_dir = os.path.join("addons", "godot_jxl", "libs")
 src_folder = "src"
 
+#tweaks to make the builds faster
+CacheDir('.build_cache')
+SetOption('random', 1)
+
 # If necessary, add patches from the code
 patches_to_apply = [
     "patches/godot_cpp_exclude_unused_classes.patch",  # Removes unused godot-cpp classes from the build process

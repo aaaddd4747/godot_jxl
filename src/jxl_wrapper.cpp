@@ -32,7 +32,7 @@ using namespace godot;
 
 namespace jxl_functions { //my own tomfoolery goes here
 	
-	Error decode(const uint8_t *data_in,size_t data_length,const Ref<Image> &out_image){
+	Error decode(const PackedByteArray &in_data,const Ref<Image> &out_image){
 		//much, but not all of this function is derived from: https://github.com/libjxl/libjxl/blob/main/examples/decode_oneshot.cc
 		//for now i am just doing this directly, the real fun begins later.
 		
@@ -45,6 +45,9 @@ namespace jxl_functions { //my own tomfoolery goes here
 		ysize = &_ysize;
 		std::vector<float> _pixels;//a third time for good luck! this is the output buffer.
 		std::vector<float> *pixels = &_pixels;
+		const uint8_t *jxl = &(in_data[0]);
+		JxlDecoderSetInput(decoder.get(), jxl, in_data.size());
+		JxlDecoderCloseInput(decoder.get());
 		if (JXL_DEC_SUCCESS !=
 			JxlDecoderSubscribeEvents(decoder.get(), JXL_DEC_BASIC_INFO |
 													 JXL_DEC_COLOR_ENCODING |
@@ -145,11 +148,16 @@ namespace jxl_functions { //my own tomfoolery goes here
 		}
 	IMAGE_DECODE_COMPLETE:
 		//ok, by this point we have a fully decoded image in float format.
-		std::vector<uint8_t> dat_out;
-		dat_out.reserve(sizeof(float) * pixels->size());
-		memcpy(dat_out.data(), pixels->data(),dat_out.size());
+		PackedByteArray dat_out;
+		dat_out.resize(sizeof(float) * pixels->size());
+		memcpy(dat_out.ptrw(), pixels->data(),dat_out.size());
 		// const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, (pixels->size())*sizeof(float),(uint8_t*)pixels->data());
-		const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, dat_out.size(), reinterpret_cast<PackedByteArray>(*dat_out));
+		//TODO: figure out what to do to properly cast this so the data can actually be sent out. this aint it apparently.
+		// const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF, dat_out.size(), reinterpret_cast<PackedByteArray>(*dat_out));
+		//function sig:
+		//void set_data(int p_width, int p_height, bool p_use_mipmaps, Format p_format, const Vector<uint8_t> &p_data);
+		const_cast<Image *>(out_image.ptr())->set_data(_xsize, _ysize, false,Image::Format::FORMAT_RGBAF,dat_out);
+		return Error::OK;
 	}
 }
 
@@ -196,7 +204,7 @@ Error JXL::decode_to_image(const PackedByteArray &data, const Ref<Image> &out_im
 	// void *out;
 
 	// out = jxl_functions::decode(data.ptr(), (int)data.size(), &desc, 0);
-	Error result = jxl_functions::decode(data->data() , data->size() ,out_image);
+	Error result = jxl_functions::decode(data ,out_image);
 	return result;
 	// ERR_FAIL_COND_V_MSG(out == NULL, ERR_FILE_CORRUPT, "Unable to decode data");
 
@@ -218,63 +226,65 @@ Error JXL::decode_to_image(const PackedByteArray &data, const Ref<Image> &out_im
 }
 
 Error JXL::write(String path, Ref<Image> img) {
-	ERR_FAIL_COND_V_MSG(img.is_null(), Error::ERR_INVALID_PARAMETER, "Image cannot be null");
-	ERR_FAIL_COND_V_MSG(img->is_empty(), Error::ERR_INVALID_PARAMETER, "Image cannot be empty");
+	// ERR_FAIL_COND_V_MSG(img.is_null(), Error::ERR_INVALID_PARAMETER, "Image cannot be null");
+	// ERR_FAIL_COND_V_MSG(img->is_empty(), Error::ERR_INVALID_PARAMETER, "Image cannot be empty");
 
-	PackedByteArray b = encode(img);
-	ERR_FAIL_COND_V_MSG(b.size() == 0, Error::FAILED, "Image cannot be null or empty");
+	// PackedByteArray b = encode(img);
+	// ERR_FAIL_COND_V_MSG(b.size() == 0, Error::FAILED, "Image cannot be null or empty");
 
-	Ref<FileAccess> f = FileAccess::open(path, FileAccess::WRITE);
+	// Ref<FileAccess> f = FileAccess::open(path, FileAccess::WRITE);
 
-	ERR_FAIL_COND_V_MSG(f.is_null(), FileAccess::get_open_error(), "Could not open the file for writing: " + path + ". Error: " + String::num_int64((int)FileAccess::get_open_error()));
+	// ERR_FAIL_COND_V_MSG(f.is_null(), FileAccess::get_open_error(), "Could not open the file for writing: " + path + ". Error: " + String::num_int64((int)FileAccess::get_open_error()));
 
-	f->store_buffer(b);
-	auto err = f->get_error();
-	f.unref();
+	// f->store_buffer(b);
+	// auto err = f->get_error();
+	// f.unref();
 
-	ERR_FAIL_COND_V_MSG(err != Error::OK, f->get_error(), "Failed to write data to file " + path + ". Error: " + String::num_int64((int)err));
+	// ERR_FAIL_COND_V_MSG(err != Error::OK, f->get_error(), "Failed to write data to file " + path + ". Error: " + String::num_int64((int)err));
 
 	return Error::OK;
 }
 
 PackedByteArray JXL::encode(Ref<Image> img) {
 	//TODO: convert this to jxl
-	ERR_FAIL_COND_V_MSG(img.is_null(), PackedByteArray(), "Image cannot be null");
-	ERR_FAIL_COND_V_MSG(img->is_empty(), PackedByteArray(), "Image cannot be empty");
+	PackedByteArray x;
+	return x;
+	// ERR_FAIL_COND_V_MSG(img.is_null(), PackedByteArray(), "Image cannot be null");
+	// ERR_FAIL_COND_V_MSG(img->is_empty(), PackedByteArray(), "Image cannot be empty");
 
-	bool has_alpha = img->detect_alpha();
+	// bool has_alpha = img->detect_alpha();
 
-	if (img->get_format() != Image::Format::FORMAT_RGB8 && img->get_format() != Image::Format::FORMAT_RGBA8) {
-		// try to convert
-		img->convert(has_alpha ? Image::Format::FORMAT_RGBA8 : Image::Format::FORMAT_RGB8);
+	// if (img->get_format() != Image::Format::FORMAT_RGB8 && img->get_format() != Image::Format::FORMAT_RGBA8) {
+	// 	// try to convert
+	// 	img->convert(has_alpha ? Image::Format::FORMAT_RGBA8 : Image::Format::FORMAT_RGB8);
 
-		ERR_FAIL_COND_V_MSG(img->get_format() != Image::FORMAT_RGB8 && img->get_format() != Image::FORMAT_RGBA8, PackedByteArray(), "Unsupported image format");
-	} else {
-		img->convert(has_alpha ? Image::Format::FORMAT_RGBA8 : Image::Format::FORMAT_RGB8);
-	}
+	// 	ERR_FAIL_COND_V_MSG(img->get_format() != Image::FORMAT_RGB8 && img->get_format() != Image::FORMAT_RGBA8, PackedByteArray(), "Unsupported image format");
+	// } else {
+	// 	img->convert(has_alpha ? Image::Format::FORMAT_RGBA8 : Image::Format::FORMAT_RGB8);
+	// }
 
-	jxl_desc enc = {
-		(uint32_t)img->get_width(),
-		(uint32_t)img->get_height(),
-		(uint8_t)(img->get_format() == Image::Format::FORMAT_RGB8 ? 3 : 4),
-		JXL_SRGB
-	};
+	// jxl_desc enc = {
+	// 	(uint32_t)img->get_width(),
+	// 	(uint32_t)img->get_height(),
+	// 	(uint8_t)(img->get_format() == Image::Format::FORMAT_RGB8 ? 3 : 4),
+	// 	JXL_SRGB
+	// };
 
-	int len = 0;
-	void *out;
+	// int len = 0;
+	// void *out;
 
-	out = jxl_functions::encode(img->get_data().ptr(), &enc, &len);
-	ERR_FAIL_COND_V_MSG(out == NULL, PackedByteArray(), "Unable to encode the image");
+	// out = jxl_functions::encode(img->get_data().ptr(), &enc, &len);
+	// ERR_FAIL_COND_V_MSG(out == NULL, PackedByteArray(), "Unable to encode the image");
 
-	PackedByteArray res;
-	res.resize(len);
-	if (res.size() != len) {
-		::free(out);
-		ERR_FAIL_V_MSG(PackedByteArray(), "Unable to resize PackedByteArray");
-	}
+	// PackedByteArray res;
+	// res.resize(len);
+	// if (res.size() != len) {
+	// 	::free(out);
+	// 	ERR_FAIL_V_MSG(PackedByteArray(), "Unable to resize PackedByteArray");
+	// }
 
-	memcpy(res.ptrw(), out, len);
-	::free(out);
+	// memcpy(res.ptrw(), out, len);
+	// ::free(out);
 
-	return res;
+	// return res;
 }
