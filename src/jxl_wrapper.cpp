@@ -1,4 +1,4 @@
-#include "qoi_wrapper.h"
+#include "jxl_wrapper.h"
 #include "version.h"
 
 #define QOI_NO_STDIO
@@ -8,7 +8,7 @@
 
 using namespace godot;
 
-void QOI::_bind_methods() {
+void JXL::_bind_methods() {
 	ClassDB::bind_static_method(NAMEOF(QOI), D_METHOD(NAMEOF(_get_version)), &QOI::_get_version);
 	ClassDB::bind_static_method(NAMEOF(QOI), D_METHOD(NAMEOF(write), "path", "image"), &QOI::write);
 	ClassDB::bind_static_method(NAMEOF(QOI), D_METHOD(NAMEOF(encode), "image"), &QOI::encode);
@@ -16,11 +16,11 @@ void QOI::_bind_methods() {
 	ClassDB::bind_static_method(NAMEOF(QOI), D_METHOD(NAMEOF(decode), "data"), &QOI::decode);
 }
 
-String QOI::_get_version() {
+String JXL::_get_version() {
 	return GQOI_VERSION_STR;
 }
 
-Ref<Image> QOI::read(String path) {
+Ref<Image> JXL::read(String path) {
 	ERR_FAIL_COND_V_MSG(!FileAccess::file_exists(path), Ref<Image>(), "File does not exist: " + path);
 
 	Ref<FileAccess> f = FileAccess::open(path, FileAccess::READ);

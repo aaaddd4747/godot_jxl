@@ -1,12 +1,12 @@
 #pragma once
 
 #include "compiler.h"
-#include "qoi_shared.h"
+#include "qoi_shared.h" //note that we are not renaming this one. there isnt anything in it that needs to change.
 
 using namespace godot;
 
-class QOI : public RefCounted {
-	GDCLASS(QOI, RefCounted)
+class JXL : public RefCounted {
+	GDCLASS(JXL, RefCounted)
 
 	friend class QOIImport;
 

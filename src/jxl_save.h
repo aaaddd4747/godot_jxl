@@ -8,8 +8,8 @@ GODOT_WARNING_DISABLE()
 GODOT_WARNING_RESTORE()
 using namespace godot;
 
-class QOIResourceSaver : public ResourceFormatSaver {
-	GDCLASS(QOIResourceSaver, ResourceFormatSaver)
+class JXLResourceSaver : public ResourceFormatSaver {
+	GDCLASS(JXLResourceSaver, ResourceFormatSaver)
 
 protected:
 	static void _bind_methods(){};
