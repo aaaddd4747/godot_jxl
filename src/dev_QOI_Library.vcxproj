@@ -63,16 +63,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='template_debug|x64'">
     <IncludePath>$(ProjectDir)..\godot-cpp\gdextension;$(ProjectDir)..\godot-cpp\gen\include;$(ProjectDir)..\godot-cpp\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)..\godot-cpp\bin;$(LibraryPath)</LibraryPath>
-    <OutDir>$(ProjectDir)..\addons\godot_qoi\libs\</OutDir>
-    <TargetName>libgodot_qoi.windows.$(Configuration).$(LlvmPlatformName)</TargetName>
+    <OutDir>$(ProjectDir)..\addons\godot_jxl\libs\</OutDir>
+    <TargetName>libgodot_jxl.windows.$(Configuration).$(LlvmPlatformName)</TargetName>
     <IntDir>$(SolutionDir)obj\$(PlatformTarget)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='template_dev|x64'">
     <IncludePath>$(ProjectDir)..\godot-cpp\gdextension;$(ProjectDir)..\godot-cpp\gen\include;$(ProjectDir)..\godot-cpp\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)..\godot-cpp\bin;$(LibraryPath)</LibraryPath>
-    <OutDir>$(ProjectDir)..\addons\godot_qoi\libs\</OutDir>
-    <TargetName>libgodot_qoi.windows.template_debug.$(LlvmPlatformName)</TargetName>
+    <OutDir>$(ProjectDir)..\addons\godot_jxl\libs\</OutDir>
+    <TargetName>libgodot_jxl.windows.template_debug.$(LlvmPlatformName)</TargetName>
     <IntDir>$(SolutionDir)obj\$(PlatformTarget)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -80,8 +80,8 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(ProjectDir)..\godot-cpp\gdextension;$(ProjectDir)..\godot-cpp\gen\include;$(ProjectDir)..\godot-cpp\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)..\godot-cpp\bin;$(LibraryPath)</LibraryPath>
-    <OutDir>$(ProjectDir)..\addons\godot_qoi\libs\</OutDir>
-    <TargetName>libgodot_qoi.windows.$(Configuration).$(LlvmPlatformName)</TargetName>
+    <OutDir>$(ProjectDir)..\addons\godot_jxl\libs\</OutDir>
+    <TargetName>libgodot_jxl.windows.$(Configuration).$(LlvmPlatformName)</TargetName>
     <IntDir>$(SolutionDir)obj\$(PlatformTarget)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='template_debug|x64'">
@@ -173,19 +173,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="asset_library_update_checker.cpp" />
-    <ClCompile Include="qoi_import.cpp" />
-    <ClCompile Include="qoi_save.cpp" />
-    <ClCompile Include="qoi_wrapper.cpp" />
+    <ClCompile Include="jxl_import.cpp" />
+    <ClCompile Include="jxl_save.cpp" />
+    <ClCompile Include="jxl_wrapper.cpp" />
     <ClCompile Include="register_types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asset_library_update_checker.h" />
     <ClInclude Include="compiler.h" />
-    <ClInclude Include="qoi.h" />
-    <ClInclude Include="qoi_import.h" />
-    <ClInclude Include="qoi_save.h" />
+    <ClInclude Include="jxl.h" />
+    <ClInclude Include="jxl_import.h" />
+    <ClInclude Include="jxl_save.h" />
     <ClInclude Include="qoi_shared.h" />
-    <ClInclude Include="qoi_wrapper.h" />
+    <ClInclude Include="jxl_wrapper.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

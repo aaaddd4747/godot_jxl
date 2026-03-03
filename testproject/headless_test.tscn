@@ -1,6 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://bq1rfb6je8rk6"]
-
-[ext_resource type="PackedScene" uid="uid://b32t735vtvy16" path="res://testsuite/TestScene.tscn" id="1_jehmx"]
+[gd_scene format=3 uid="uid://bq1rfb6je8rk6"]
 
 [sub_resource type="GDScript" id="GDScript_wbn2v"]
 script/source = "extends Node
@@ -10,7 +8,7 @@ func _ready():
 	if FileAccess.file_exists(\"SUCCESS\"):
 		DirAccess.remove_absolute(\"SUCCESS\")
 	
-	print(\"QOI Version: \", QOI._get_version())
+	print(\"JXL Version: \", JXL._get_version())
 	print(\"Engine Version: \", Engine.get_version_info())
 	print(\"Distribution: \", OS.get_distribution_name())
 	print(\"OS Name: \", OS.get_name())
@@ -30,8 +28,8 @@ func _ready():
 	get_tree().quit(0 if res == true else 1)
 "
 
-[node name="HeadlessTest" type="Node"]
+[node name="HeadlessTest" type="Node" unique_id=735540627]
 script = SubResource("GDScript_wbn2v")
 
-[node name="Runner" parent="." instance=ExtResource("1_jehmx")]
+[node name="Runner" parent="." unique_id=1408062735]
 run_benchmark = false

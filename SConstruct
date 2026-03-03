@@ -16,9 +16,9 @@ SConsEnvironment.EnsureSConsVersion(4, 0)
 SConsEnvironment.EnsurePythonVersion(3, 8)
 
 # Project config
-project_name = "Godot QOI"
-lib_name = "godot_qoi"
-default_output_dir = os.path.join("addons", "godot_qoi", "libs")
+project_name = "Godot JXL"
+lib_name = "godot_jxl"
+default_output_dir = os.path.join("addons", "godot_jxl", "libs")
 src_folder = "src"
 
 # If necessary, add patches from the code
